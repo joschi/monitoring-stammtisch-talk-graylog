@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Graylog</title><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui" name="viewport"><link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/css/reveal.css" rel="stylesheet"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/css/theme/moon.css" id="theme"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css"><link href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/lib/css/zenburn.css" rel="stylesheet"><script>document.write( '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );</script><link rel="stylesheet" href="slides.css"></head><body><div class="reveal"><div class="slides"><section class="title" data-background-image="images/logging_truck.jpg"><h1>Graylog</h1></section><section><section id="_einfhrung_1"><h2>Einführung (1)</h2><div class="quoteblock"><blockquote><div class="paragraph"><p>Unter Logging versteht man in der Informatik generell das (automatische) Speichern von Prozessen oder Datenänderungen. Diese werden in sogenannten Logdateien hinterlegt bzw. gespeichert.</p></div></blockquote></div><div class="paragraph"><p><a href="https://de.wikipedia.org/wiki/Logging">Wikipedia - Logging</a></p></div></section><section id="_einfhrung_2"><h2>Einführung (2)</h2><div class="quoteblock"><blockquote><div class="paragraph"><p>Außer dem Betriebssystem selbst schreiben meist Hintergrundprogramme […] in Logdateien, um Aktionsmeldungen, Fehlermeldungen und Hinweise persistent (dauernd) oder temporär verfügbar zu halten. Ähnliches gilt für Installationsprogramme, Firewalls, Virenscanner und dergleichen.</p></div></blockquote></div>
+<div class="paragraph"><p><a href="https://de.wikipedia.org/wiki/Logging">Wikipedia - Logging</a></p></div></section><section id="_einfhrung_3"><h2>Einführung (3)</h2><div class="paragraph"><p>Logs geben die Möglichkeit Dinge zu einem späteren Zeitpunkt nachzuvollziehen.</p></div></section><section id="_einfhrung_4"><h2>Einführung (4)</h2><div class="imageblock" style=""><a class="image" href="https://twitter.com/janl/status/785456374566223872"><img src="images/janl_tweet.png" alt="Debugging"></a></div></section></section>
+<section id="_security_1"><h2>Security (1)</h2><div class="quoteblock"><blockquote><div class="paragraph"><p>A theme in this article will be: “what separates standard incidents from horrifying nightmares?”</p></div>
+<div class="paragraph"><p>A good or bad story around logging will dictate the rest of the incident.</p></div></blockquote></div>
+<div class="paragraph"><p><a href="https://medium.com/starting-up-security/learning-from-a-year-of-security-breaches-ed036ea05d9b">Learning From A Year of Security Breaches</a></p></div></section>
+<section id="_security_2"><h2>Security (2)</h2><div class="quoteblock"><blockquote><div class="paragraph"><p>I recommend that any security or infrastructure team putting off a comprehensive approach to logging drop nearly everything to invest in it.</p></div></blockquote></div>
+<div class="paragraph"><p><a href="https://medium.com/starting-up-security/learning-from-a-year-of-security-breaches-ed036ea05d9b">Learning From A Year of Security Breaches</a></p></div></section>
+<section><section id="_what_s_in_a_log_message_1"><h2>What&#8217;s in a log message? (1)</h2><div class="paragraph"><p>Minimale Lognachricht:</p></div><div class="ulist"><ul><li class="fragment"><p>Zeitstempel (idealerweise <a href="https://de.wikipedia.org/wiki/ISO_8601">ISO 8601</a>-kompatibel)</p></li><li class="fragment"><p>Daten</p></li></ul></div></section><section id="_what_s_in_a_log_message_2"><h2>What&#8217;s in a log message? (2)</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>Mar 27 18:15:23 Example Message</code></pre></div></div></section><section id="_what_s_in_a_log_message_2_2"><h2>What&#8217;s in a log message? (2)</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>2017-03-27T16:15:23.012Z Example Message</code></pre></div></div></section><section id="_what_s_in_a_log_message_3"><h2>What&#8217;s in a log message? (3)</h2><div class="listingblock"><div class="content"><pre class="highlight"><code>2017-03-27T16:15:23.012Z joschi-mbp15 joschi[47088]: \
+  Example Message</code></pre></div></div></section><section id="_what_s_in_a_log_message_4"><h2>What&#8217;s in a log message? (4)</h2><div class="listingblock"><div class="content"><pre class="highlight"><code class="json language-json">{
+  "version": "1.1",
+  "host": "joschi-mbp15",
+  "short_message": "Example Message",
+  "full_message": "Multiline\nStacktrace\nhere",
+  "timestamp": 1490631323.012,
+  "level": 6,
+  "_user": "joschi",
+  "_user_id": 1001,
+  "_process_id": "47088",
+  "_some_env_var": "bar"
+}</code></pre></div></div></section></section>
+<section id="_structured_logging"><h2>Structured Logging</h2><div class="ulist"><ul><li><p>Strukturierte Informationen in einer Lognachricht</p></li><li><p>Idealerweise mit definiertem Schema (Datentyp, Datenbereich etc.)</p></li><li><p>Structured Syslog: <a href="https://tools.ietf.org/html/rfc5424">RFC 5424</a></p></li><li><p>Alternativen: <a href="http://docs.graylog.org/en/2.2/pages/gelf.html">GELF</a>, <a href="https://www.protect724.hpe.com/docs/DOC-1072">CEF (Common Event Format)</a>, <a href="https://journal.paul.querna.org/articles/2011/12/26/log-for-machines-in-json/">JSON</a></p></li></ul></div></section>
+<section id="_best_practices"><h2>Best practices</h2><div class="ulist"><ul><li class="fragment"><p>Structured Logging verwenden</p></li><li class="fragment"><p>Daten normalisieren und gemeinsames Vokabular für alle Systeme definieren</p></li><li class="fragment"><p>Logmeldungen an zentraler Stelle sammeln</p></li><li class="fragment"><p>Sinnvolle Daten loggen (nein, keine 32 GiB große Coredumps…)</p></li></ul></div></section>
+<section><section id="_graylog"><h2>Graylog</h2><div class="ulist"><ul><li class="fragment"><p>Freie Software (kostenlos und Open Source)</p></li><li class="fragment"><p>Einfach zu installieren</p></li><li class="fragment"><p>Leistungsfähig (bei entsprechender Hardware)</p></li><li class="fragment"><p>Erweiterbar durch Plugins</p></li></ul></div></section><section id="_graylog_kommerzieller_einsatz"><h2>Graylog (Kommerzieller Einsatz)</h2><div class="ulist"><ul><li><p><a href="https://www.graylog.org/professional-support">Kommerzieller Support</a></p></li><li><p><a href="https://www.graylog.org/enterprise">Enterprise Features</a> (Archiving, Audit Log)</p></li></ul></div></section><section id="_graylog_inputs"><h2>Graylog (Inputs)</h2><div class="ulist"><ul><li><p>GELF (UDP, TCP, AMQP, Kafka)</p></li><li><p>Syslog (UDP, TCP, AMQP, Kafka)</p></li><li><p>Raw/Plaintext (UDP, TCP, AMQP, Kafka)</p></li><li><p>Beats (Filebeat, Metricbeat, etc.)</p></li></ul></div></section><section id="_graylog_inputs_community"><h2>Graylog (Inputs, community)</h2><div class="ulist"><ul><li><p>Redis</p></li><li><p>NATS</p></li><li><p>MQTT</p></li><li><p>SNMP</p></li><li><p>Netflow</p></li><li><p>…und viele mehr im Graylog Marketplace</p></li></ul></div></section><section id="_graylog_marketplace_1" data-background-image="images/graylog_marketplace1.png" data-background-size="contain"></section><section id="_graylog_marketplace_2" data-background-image="images/graylog_marketplace2.png" data-background-size="contain"></section><section id="_graylog_community" data-background-image="images/graylog_community.png" data-background-size="contain"></section></section>
+<section><section id="_graylog_cluster_komponenten"><h2>Graylog Cluster: Komponenten</h2><div class="ulist"><ul><li class="fragment"><p>Graylog</p></li><li class="fragment"><p>Elasticsearch 2.x</p></li><li class="fragment"><p>MongoDB 2.4 oder höher</p></li><li class="fragment"><p>Optional: Graylog Collector</p></li></ul></div></section><section id="_graylog_architektur_1" data-background-image="images/graylog_setup1.png" data-background-size="contain"></section><section id="_graylog_architektur_2" data-background-image="images/graylog_setup2.png" data-background-size="contain"></section><section id="_graylog_dashboard_1" data-background-image="images/graylog_dashboard1.png" data-background-size="contain"></section><section id="_graylog_dashboard_2" data-background-image="images/graylog_dashboard2.png" data-background-size="contain"></section><section id="_graylog_dashboard_3" data-background-image="images/graylog_dashboard3.png" data-background-size="contain"></section><section id="_graylog_search" data-background-image="images/graylog_search.png" data-background-size="contain"></section><section id="_graylog_collector_1" data-background-image="images/graylog_collector1.png" data-background-size="contain"></section><section id="_graylog_collector_2" data-background-image="images/graylog_collector2.png" data-background-size="contain"></section></section>
+<section id="_demo"><h2>Demo</h2><div class="paragraph"><p><a href="http://localhost:9000/">Demo on AWS (non-public)</a></p></div></section>
+<section id="_kontakt"><h2>Kontakt</h2><div class="imageblock" style=""><img src="images/yoshi.png" alt="Yoshi"></div>
+<div class="paragraph"><p><span class="icon"><a class="image" href="https://twitter.com/joschi83"><i class="fa fa-twitter"></i></a></span> –
+<span class="icon"><a class="image" href="https://github.com/joschi"><i class="fa fa-github"></i></a></span> –
+<span class="icon"><a class="image" href="https://www.linkedin.com/in/jschalanda"><i class="fa fa-linkedin"></i></a></span> –
+<span class="icon"><a class="image" href="https://www.xing.com/profile/Jochen_Schalanda"><i class="fa fa-xing"></i></a></span></p></div></section>
+<section id="_fragen" data-background-image="images/twinpeaks_loglady.jpg" data-background-size="cover"><h2>Fragen?</h2></section>
+<section id="_weiterfhrende_quellen"><h2>Weiterführende Quellen</h2><div class="ulist"><ul><li><p><a href="https://www.graylog.org/">Graylog</a></p></li><li><p><a href="http://docs.graylog.org/">Graylog Documentation</a></p></li><li><p><a href="https://marketplace.graylog.org/">Graylog Marketplace</a></p></li><li><p><a href="https://community.graylog.org/">Graylog Community Forums</a></p></li><li><p><a href="https://jaxenter.de/wissen-sammeln-49947">JAXenter: Logmanagement mit Graylog</a></p></li></ul></div></section></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/lib/js/head.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/js/reveal.js"></script><script>// See https://github.com/hakimel/reveal.js#configuration for a full list of configuration options
+Reveal.initialize({
+  // Display controls in the bottom right corner
+  controls: true,
+  // Display a presentation progress bar
+  progress: true,
+  // Display the page number of the current slide
+  slideNumber: false,
+  // Push each slide change to the browser history
+  history: true,
+  // Enable keyboard shortcuts for navigation
+  keyboard: true,
+  // Enable the slide overview mode
+  overview: true,
+  // Vertical centering of slides
+  center: true,
+  // Enables touch navigation on devices with touch input
+  touch: true,
+  // Loop the presentation
+  loop: false,
+  // Change the presentation direction to be RTL
+  rtl: false,
+  // Turns fragments on and off globally
+  fragments: true,
+  // Flags if the presentation is running in an embedded mode,
+  // i.e. contained within a limited portion of the screen
+  embedded: false,
+  // Number of milliseconds between automatically proceeding to the
+  // next slide, disabled when set to 0, this value can be overwritten
+  // by using a data-autoslide attribute on your slides
+  autoSlide: 0,
+  // Stop auto-sliding after user input
+  autoSlideStoppable: true,
+  // Enable slide navigation via mouse wheel
+  mouseWheel: false,
+  // Hides the address bar on mobile devices
+  hideAddressBar: true,
+  // Opens links in an iframe preview overlay
+  previewLinks: false,
+  // Theme (e.g., beige, black, league, night, serif, simple, sky, solarized, white)
+  // NOTE setting the theme in the config no longer works in reveal.js 3.x
+  //theme: Reveal.getQueryHash().theme || 'moon',
+  // Transition style (e.g., none, fade, slide, convex, concave, zoom)
+  transition: Reveal.getQueryHash().transition || 'slide',
+  // Transition speed (e.g., default, fast, slow)
+  transitionSpeed: 'default',
+  // Transition style for full page slide backgrounds (e.g., none, fade, slide, convex, concave, zoom)
+  backgroundTransition: 'fade',
+  // Number of slides away from the current that are visible
+  viewDistance: 3,
+  // Parallax background image (e.g., "'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg'")
+  parallaxBackgroundImage: '',
+  // Parallax background size in CSS syntax (e.g., "2100px 900px")
+  parallaxBackgroundSize: '',
+
+  // The "normal" size of the presentation, aspect ratio will be preserved
+  // when the presentation is scaled to fit different resolutions. Can be
+  // specified using percentage units.
+  width: 960,
+  height: 700,
+
+  // Factor of the display size that should remain empty around the content
+  margin: 0.1,
+
+  // Bounds for smallest/largest possible scale to apply to content
+  minScale: 0.2,
+  maxScale: 1.5,
+
+  // Optional libraries used to extend on reveal.js
+  dependencies: [
+      { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      
+      { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+  ]
+});</script></body></html>
