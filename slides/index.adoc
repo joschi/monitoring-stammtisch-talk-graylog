@@ -1,0 +1,264 @@
+= Graylog
+:backend: revealjs
+:imagesdir: images
+:icons: font
+:customcss: slides.css
+:revealjsdir: https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.4.1
+:revealjs_theme: moon
+:revealjs_history: true
+:title-slide-background-image: logging_truck.jpg
+
+
+== Einführung (1)
+
+[quote]
+____
+Unter Logging versteht man in der Informatik generell das (automatische) Speichern von Prozessen oder Datenänderungen. Diese werden in sogenannten Logdateien hinterlegt bzw. gespeichert.
+____
+https://de.wikipedia.org/wiki/Logging[Wikipedia - Logging]
+
+
+=== Einführung (2)
+
+[quote]
+____
+Außer dem Betriebssystem selbst schreiben meist Hintergrundprogramme […] in Logdateien, um Aktionsmeldungen, Fehlermeldungen und Hinweise persistent (dauernd) oder temporär verfügbar zu halten. Ähnliches gilt für Installationsprogramme, Firewalls, Virenscanner und dergleichen.
+____
+https://de.wikipedia.org/wiki/Logging[Wikipedia - Logging]
+
+
+=== Einführung (3)
+
+Logs geben die Möglichkeit Dinge zu einem späteren Zeitpunkt nachzuvollziehen.
+
+
+=== Einführung (4)
+
+image::janl_tweet.png[Debugging, link="https://twitter.com/janl/status/785456374566223872"]
+
+
+== Security (1)
+
+[quote]
+____
+A theme in this article will be: “what separates standard incidents from horrifying nightmares?”
+
+A good or bad story around logging will dictate the rest of the incident.
+____
+https://medium.com/starting-up-security/learning-from-a-year-of-security-breaches-ed036ea05d9b[Learning From A Year of Security Breaches]
+
+
+== Security (2)
+
+[quote]
+____
+I recommend that any security or infrastructure team putting off a comprehensive approach to logging drop nearly everything to invest in it.
+____
+https://medium.com/starting-up-security/learning-from-a-year-of-security-breaches-ed036ea05d9b[Learning From A Year of Security Breaches]
+
+
+== What's in a log message? (1)
+
+Minimale Lognachricht:
+
+[%step]
+* Zeitstempel (idealerweise https://de.wikipedia.org/wiki/ISO_8601[ISO 8601]-kompatibel)
+* Daten
+
+
+=== What's in a log message? (2)
+
+[source]
+----
+Mar 27 18:15:23 Example Message
+----
+
+
+=== What's in a log message? (2)
+
+[source]
+----
+2017-03-27T16:15:23.012Z Example Message
+----
+
+
+=== What's in a log message? (3)
+
+[source]
+----
+2017-03-27T16:15:23.012Z joschi-mbp15 joschi[47088]: \
+  Example Message
+----
+
+
+=== What's in a log message? (4)
+
+[source,json]
+----
+{
+  "version": "1.1",
+  "host": "joschi-mbp15",
+  "short_message": "Example Message",
+  "full_message": "Multiline\nStacktrace\nhere",
+  "timestamp": 1490631323.012,
+  "level": 6,
+  "_user": "joschi",
+  "_user_id": 1001,
+  "_process_id": "47088",
+  "_some_env_var": "bar"
+}
+----
+
+
+
+== Structured Logging
+
+* Strukturierte Informationen in einer Lognachricht
+* Idealerweise mit definiertem Schema (Datentyp, Datenbereich etc.)
+* Structured Syslog: https://tools.ietf.org/html/rfc5424[RFC 5424]
+* Alternativen: http://docs.graylog.org/en/2.2/pages/gelf.html[GELF], https://www.protect724.hpe.com/docs/DOC-1072[CEF (Common Event Format)], https://journal.paul.querna.org/articles/2011/12/26/log-for-machines-in-json/[JSON]
+
+
+== Best practices
+
+[%step]
+* Structured Logging verwenden
+* Daten normalisieren und gemeinsames Vokabular für alle Systeme definieren
+* Logmeldungen an zentraler Stelle sammeln
+* Sinnvolle Daten loggen (nein, keine 32 GiB große Coredumps…)
+
+
+== Graylog
+
+[%step]
+* Freie Software (kostenlos und Open Source)
+* Einfach zu installieren
+* Leistungsfähig (bei entsprechender Hardware)
+* Erweiterbar durch Plugins
+
+
+=== Graylog (Kommerzieller Einsatz)
+
+* https://www.graylog.org/professional-support[Kommerzieller Support]
+* https://www.graylog.org/enterprise[Enterprise Features] (Archiving, Audit Log)
+
+
+=== Graylog (Inputs)
+
+* GELF (UDP, TCP, AMQP, Kafka)
+* Syslog (UDP, TCP, AMQP, Kafka)
+* Raw/Plaintext (UDP, TCP, AMQP, Kafka)
+* Beats (Filebeat, Metricbeat, etc.)
+
+
+=== Graylog (Inputs, community)
+
+* Redis
+* NATS
+* MQTT
+* SNMP
+* Netflow
+* …und viele mehr im Graylog Marketplace
+
+
+[%notitle]
+=== Graylog Marketplace (1)
+
+image::graylog_marketplace1.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Marketplace (2)
+
+image::graylog_marketplace2.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Community
+
+image::graylog_community.png[background, size=contain]
+
+
+== Graylog Cluster: Komponenten
+
+[%step]
+* Graylog
+* Elasticsearch 2.x
+* MongoDB 2.4 oder höher
+* Optional: Graylog Collector
+
+
+[%notitle]
+=== Graylog Architektur (1)
+
+image::graylog_setup1.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Architektur (2)
+
+image::graylog_setup2.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Dashboard (1)
+
+image::graylog_dashboard1.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Dashboard (2)
+
+image::graylog_dashboard2.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Dashboard (3)
+
+image::graylog_dashboard3.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Search
+
+image::graylog_search.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Collector (1)
+
+image::graylog_collector1.png[background, size=contain]
+
+
+[%notitle]
+=== Graylog Collector (2)
+
+image::graylog_collector2.png[background, size=contain]
+
+
+== Demo
+
+http://localhost:9000/[Demo on AWS (non-public)]
+
+
+== Kontakt
+
+image::yoshi.png[Yoshi]
+icon:twitter[link="https://twitter.com/joschi83"] –
+icon:github[link="https://github.com/joschi"] –
+icon:linkedin[link="https://www.linkedin.com/in/jschalanda"] –
+icon:xing[link="https://www.xing.com/profile/Jochen_Schalanda"]
+
+
+== Fragen?
+
+image::twinpeaks_loglady.jpg[background, size=cover]
+
+
+== Weiterführende Quellen
+
+* https://www.graylog.org/[Graylog]
+* http://docs.graylog.org/[Graylog Documentation]
+* https://marketplace.graylog.org/[Graylog Marketplace]
+* https://community.graylog.org/[Graylog Community Forums]
+* https://jaxenter.de/wissen-sammeln-49947[JAXenter: Logmanagement mit Graylog]
